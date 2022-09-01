@@ -1,3 +1,4 @@
+import { Outlet } from 'react-router-dom';
 import Directory from "../../components/directory/directory";
 
 const Home = () => {
@@ -30,8 +31,10 @@ const Home = () => {
       ]
     
       return (
-        <Directory categories={categories}/>
-        // don't want to render Directory directly, create components for routing
+        <div>
+          <Directory categories={categories}/>  {/* don't want to render Directory directly, create components for routing */}
+          <Outlet/>
+        </div>
       );
 };
 

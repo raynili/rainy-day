@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState /*, useContext */ } from 'react';
 
 import FormInput from '../form-input/form-input';
 import Button from '../button/button';
@@ -7,6 +7,8 @@ import {
   createAuthUserWithEmailAndPassword,
   createUserDocumentFromAuth,
 } from '../../utils/firebase/firebase';
+
+// import { UserContext } from '../../contexts/user';
 
 import './sign-up-form.scss';
 
@@ -20,6 +22,10 @@ const defaultFormFields = {
 const SignUpForm = () => {
   const [formFields, setFormFields] = useState(defaultFormFields);
   const { displayName, email, password, confirmPassword } = formFields;
+
+  // const { setCurrentUser } = useContext(UserContext);
+
+  // const val = useContext(UserContext); // hooked into context, component will rerun as long as user values change
 
   const resetFormFields = () => {
     setFormFields(defaultFormFields);
@@ -39,7 +45,9 @@ const SignUpForm = () => {
         password
       );
 
-      await createUserDocumentFromAuth(user, { displayName });
+      // setCurrentUser(user);
+      await createUserDocumentFromAuth(user, { displayName }); // creates a UserDocument for Firestore
+
       resetFormFields();
     } catch (error) {
       if (error.code === 'auth/email-already-in-use') {

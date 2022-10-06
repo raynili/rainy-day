@@ -1,7 +1,9 @@
-import { useState } from 'react';
+import { useState /*, suseContext*/ } from 'react';
 
 import FormInput from '../form-input/form-input';
 import Button from '../button/button';
+
+// import { UserContext } from '../../contexts/user';
 
 import {
   signInWithGooglePopup,
@@ -20,24 +22,29 @@ const SignInForm = () => {
   const [formFields, setFormFields] = useState(defaultFormFields);
   const { email, password } = formFields;
 
+  // const { setCurrentUser } = useContext(UserContext);
+
   const resetFormFields = () => {
     setFormFields(defaultFormFields);
   };
 
   const signInWithGoogle = async () => {
-    const { user } = await signInWithGooglePopup();
-    await createUserDocumentFromAuth(user);
+    await signInWithGooglePopup();
+    // await createUserDocumentFromAuth(user);
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
     try {
-      const response = await signInAuthUserWithEmailAndPassword(
+      await signInAuthUserWithEmailAndPassword(
         email,
         password
       );
-      console.log(response);
+
+      // // store user object newly created into context
+      // setCurrentUser(user); // dont need with auth listener
+
       resetFormFields();
     } catch (error) {
       switch (error.code) {

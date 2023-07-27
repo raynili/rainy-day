@@ -1,6 +1,8 @@
-import { createContext, useState, useEffect } from 'react';
+import { createContext, useState, useEffect, useReducer } from 'react';
 
 import { onAuthStateChangedListener, createUserDocumentFromAuth } from '../utils/firebase/firebase';
+
+import { createAction } from '../utils/reducer/reducer';
 
 // actual value you want to access
 export const UserContext = createContext({
@@ -8,13 +10,41 @@ export const UserContext = createContext({
     setCurrentUser: () => null,
 });
 
+export const USER_ACTION_TYPES = {
+    'SET_CURRENT_USER': 'SET_CURRENT_USER'
+}
+
+const userReducer = ( state, action ) => {
+    const { type, payload } = action;
+
+    switch(type) {
+        case USER_ACTION_TYPES.SET_CURRENT_USER:
+            return {
+                ...state,
+                currentUser: payload,
+            }
+        default:
+            throw new Error(`Unhandled type ${type} in userReducer`);
+    }
+};
+
+const INITIAL_STATE = {
+    currentUser: null
+};
 
 /* Most user setup is in this file, centralized - auth listener of observer pattern */
 
 // provider is the glorified component that leverages useState
 // gets access in the top level to some state that is set, currentUser
 export const UserProvider = ({ children }) => {
-    const [ currentUser, setCurrentUser ] = useState(null);
+    // const [ currentUser, setCurrentUser ] = useState(null); // no more useState after useReducer with redux
+    const [ state, dispatch ] = useReducer(userReducer, INITIAL_STATE);
+
+    const currentUser = { state };
+    const setCurrentUser = (user) => {
+        dispatch(createAction(USER_ACTION_TYPES.SET_CURRENT_USER, user));
+    }
+    
     const value = { currentUser, setCurrentUser };
 
     useEffect(() => {
@@ -30,3 +60,15 @@ export const UserProvider = ({ children }) => {
 
     return <UserContext.Provider value={value}>{children}</UserContext.Provider>
 }
+
+/* Reducers are functions that return back an object (object determines the state) */
+
+/*
+
+const userReducer = (state, action) => {
+    return {
+        currentUser: null,
+    }
+}
+
+*/
